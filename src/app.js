@@ -3,12 +3,14 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const { debug } = require('console');
+const { fromPairs } = require('ramda');
 
 
 app.set('views', path.join( __dirname + '/views'));
 app.set('view engine','ejs');
 
 app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.urlencoded({ extended: false }));
 console.log(path.join(__dirname,'/json','/accounts.json'));
 const accountData = fs.readFileSync(
     path.join(__dirname,'/json','/accounts.json'), { encoding : 'UTF8' }
@@ -38,6 +40,36 @@ app.get('/credit', (req,res) => {
 
 app.get('/profile', (req,res) => {
     res.render('profile', { user: users[0] });
+});
+
+app.get('/transfer', (req,res) => {
+  res.render('transfer');
+});
+
+app.post('/transfer', (req,res) => {
+  account.balance = accounts['savings'].balance.from;
+  account.balance = parseInt(accounts['savings'].balance.to);
+  const accountsJSON = JSON.stringify(accounts);
+  fs.writeFileSync(
+    path.join(__dirname,'/json','/accounts.json'),
+    accountsJSON,
+    { encoding: 'UTF8' }
+    );
+});
+
+app.get('/payment', (req,res) => {
+    res.render('payment',{ account: accounts.credit });
+  });
+
+app.post('/payment', (req,res) => {
+    accounts.credit.balance = parseInt(accounts.credit.balance) - parseInt(req.body.amount);
+    const accountsJSON = JSON.stringify(accounts);
+    fs.writeFileSync(
+        path.join(__dirname,'/json','/accounts.json'),
+        accountsJSON,
+        { encoding: 'UTF8' }
+        );
+    res.render('payment', { message: "Payment Successful", account: accounts.credit });
 });
 
 app.listen(3000, () => {
