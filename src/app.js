@@ -28,7 +28,7 @@ app.get('/savings', (req,res) => {
   res.render('account',{ account: accounts.savings });
 });
 
-app.get('/checkings', (req,res) => {
+app.get('/checking', (req,res) => {
     res.render('account',{ account: accounts.checkings });
   });
 
@@ -37,7 +37,7 @@ app.get('/credit', (req,res) => {
 });
 
 app.get('/profile', (req,res) => {
-    res.render('profile', { user: user[0] });
+    res.render('profile', { user: users[0] });
 });
 
 app.listen(3000, () => {
